@@ -3,74 +3,13 @@ import { Typography, Box, Stack, Divider, Grid } from "@mui/material";
 import Header from "../components/Header";
 import DatePickers from "../components/common/DataPickers";
 import { getIncomeExpense } from "../services/api";
-import moment from 'moment';
-
-function Item({ item }: { item: any }) {
-  return (
-    <>
-      <Grid container p={1} px={2} spacing={2}>
-        <Grid item xs={4}>
-          <Stack spacing={0.5} direction="row" color={item.category.color}>
-            <i className={item.category.icon}></i>
-            <Typography
-              variant="h4"
-              pt={0.3}
-              pl={0.5}
-              sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                display: "block",
-                color: "#000 !important",
-                fontWeight: "bold",
-              }}
-            >
-              {item.category.name}
-            </Typography>
-          </Stack>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography
-            variant="h4"
-            pt={0.3}
-            pl={0.5}
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              display: "block",
-              color: "#000 !important",
-              textAlign: "center",
-            }}
-          >
-            {item.note}
-          </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography
-            variant="h4"
-            pt={0.3}
-            pl={0.5}
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              display: "block",
-              color: "#000 !important",
-              textAlign: "right",
-              fontWeight: "bold",
-            }}
-          >
-            {item.amount}
-          </Typography>
-        </Grid>
-      </Grid>
-    </>
-  );
-}
+import moment from "moment";
+import Item from "../components/common/Item";
 
 export default function List({ userKey }: { userKey: string }) {
-  const [time, setTime] = React.useState<string | null>(moment().format('YYYY-MM-DDThh:mm:ssZ'));
+  const [time, setTime] = React.useState<string | null>(
+    moment().format("YYYY-MM-DDThh:mm:ssZ")
+  );
   const [expense, setExpense] = React.useState<any[]>([] as any[]);
   const [income, setIncome] = React.useState<any[]>([] as any[]);
   const flag = React.useRef("");
@@ -78,14 +17,16 @@ export default function List({ userKey }: { userKey: string }) {
   const list = React.useMemo(() => {
     const merged = [...income, ...expense];
     merged.sort((a, b) => {
-      return moment(a.time, 'YYYY-MM-DD hh:mm:ss').diff(moment(b.time, 'YYYY-MM-DD hh:mm:ss'));
+      return moment(a.time, "YYYY-MM-DD hh:mm:ss").diff(
+        moment(b.time, "YYYY-MM-DD hh:mm:ss")
+      );
     });
     return merged;
   }, [expense, income]);
 
   const countExpense = React.useMemo(() => {
     let initialValue = 0;
-    for(let item of expense) {
+    for (let item of expense) {
       initialValue += item.amount;
     }
     return initialValue;
@@ -93,14 +34,14 @@ export default function List({ userKey }: { userKey: string }) {
 
   const countIncome = React.useMemo(() => {
     let initialValue = 0;
-    for(let item of income) {
+    for (let item of income) {
       initialValue += item.amount;
     }
     return initialValue;
   }, [income]);
 
   const handleChangeTime = (value: string | null) => {
-    setTime(moment(value).format('YYYY-MM-DDThh:mm:ssZ'));
+    setTime(moment(value).format("YYYY-MM-DDThh:mm:ssZ"));
   };
 
   const getExpense = React.useCallback(async () => {
@@ -162,7 +103,7 @@ export default function List({ userKey }: { userKey: string }) {
                   fontWeight: 600,
                 }}
               >
-                {countIncome + 'đ'}
+                {countIncome + "đ"}
               </Typography>
             </Stack>
           </Grid>
@@ -176,7 +117,7 @@ export default function List({ userKey }: { userKey: string }) {
                   fontWeight: 600,
                 }}
               >
-                {countExpense + 'đ'}
+                {countExpense + "đ"}
               </Typography>
             </Stack>
           </Grid>
@@ -211,24 +152,25 @@ export default function List({ userKey }: { userKey: string }) {
             return (
               <>
                 {(!locked || index === 0) && (
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  sx={{
-                    backgroundColor: "#f5f5f5",
-                    padding: 0.5,
-                    px: 2,
-                  }}
-                >
-                  <Typography variant="h5" fontWeight={600}>
-                    {moment(item.time).format("DD-MM-YYYY")}
-                  </Typography>
-                  {/* <Typography variant="h5" fontWeight={600}>
+                  <Stack
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                    sx={{
+                      backgroundColor: "#f5f5f5",
+                      padding: 0.5,
+                      px: 2,
+                    }}
+                  >
+                    <Typography variant="h5" fontWeight={600}>
+                      {moment(item.time).format("DD-MM-YYYY")}
+                    </Typography>
+                    {/* <Typography variant="h5" fontWeight={600}>
                     -100.000
                   </Typography> */}
-                </Stack>
-              )}
+                  </Stack>
+                )}
                 <Item key={index} item={item} />
+                <Divider orientation="horizontal" flexItem />
               </>
             );
           })}

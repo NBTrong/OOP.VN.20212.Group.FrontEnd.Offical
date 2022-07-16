@@ -36,7 +36,7 @@ export default function LabelBottomNavigation() {
       content: "Báo cáo",
       value: "report",
       handleClick: () => {
-        navigate("../insert", { replace: true });
+        navigate("../report", { replace: true });
       },
       icon: <PieChartOutlinedIcon fontSize="small" />,
     },

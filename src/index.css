@@ -57,3 +57,18 @@ input {
 ::-webkit-scrollbar-track {
   background-color: #f5f5f5;
 }
+
+.MuiTabs-root {
+  min-height: 10px !important;
+}
+
+.MuiTab-root {
+  min-height: 10px !important;
+  padding: 10px 10px 5px !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+}
+
+.pie-chart-custom {
+  height: 150px !important;
+}

@@ -35,7 +35,7 @@ export const createIncomeExpense = (data: Data, status: string) => {
     url: "api/v1/expense/create",
     data: {
       ...data,
-      amount: data.amount - 2*data.amount,
+      amount: data.amount - 2 * data.amount,
     },
   });
 };
@@ -61,6 +61,22 @@ export const getIncomeExpense = (
     data: {
       userKey: userKey,
       time: time,
+    },
+  });
+};
+
+export const getIncomeExpenseReport = (
+  userKey: string,
+  time: string | null,
+  status: string
+) => {
+  return api({
+    method: "POST",
+    url: "api/v1/category/report",
+    data: {
+      userKey: userKey,
+      time: time,
+      status: status,
     },
   });
 };

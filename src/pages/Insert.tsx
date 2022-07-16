@@ -13,7 +13,7 @@ import DataPickers from "../components/common/DataPickers";
 import Header from "../components/Header";
 import SwitchButton from "../components/common/SwitchButton";
 import { getCategories, createIncomeExpense } from "../services/api";
-import moment from 'moment';
+import moment from "moment";
 
 interface Data {
   userKey: string;
@@ -43,20 +43,20 @@ export default function Insert({ userKey }: { userKey: string }) {
     return expenseStore;
   }, [title, incomeStore, expenseStore]);
 
-  const handleChangeSwitch = (
-    event: React.MouseEvent<HTMLElement>,
-    newTitle: string
-  ) => {
-    setTitle(newTitle);
-    setCurrentCategory(undefined);
-    setData({
-      note: "",
-      amount: 0,
-      time: moment().format("YYYY-MM-DDThh:mm:ssZ"),
-      categoryId: 0,
-      userKey,
-    });
-  };
+  const handleChangeSwitch = useCallback(
+    (event: React.MouseEvent<HTMLElement>, newTitle: string) => {
+      setTitle(newTitle);
+      setCurrentCategory(undefined);
+      setData({
+        note: "",
+        amount: 0,
+        time: moment().format("YYYY-MM-DDThh:mm:ssZ"),
+        categoryId: 0,
+        userKey,
+      });
+    },
+    [userKey]
+  );
 
   const getCategoryIncome = useCallback(async () => {
     try {
@@ -76,12 +76,12 @@ export default function Insert({ userKey }: { userKey: string }) {
     }
   }, []);
 
-  const handleClickCategory = (id: number) => {
+  const handleClickCategory = useCallback((id: number) => {
     setCurrentCategory(id);
-  };
+  }, []);
 
   const handleChangeTime = (value: string | null) => {
-    setData({ ...data, time: moment(value).format('YYYY-MM-DDThh:mm:ssZ') });
+    setData({ ...data, time: moment(value).format("YYYY-MM-DDThh:mm:ssZ") });
   };
 
   const handleChangeNote = (event: any) => {

@@ -7,6 +7,7 @@ import BottomNavigation from "./components/BottomNavigation";
 import Insert from "./pages/Insert";
 import { v4 as uuidv4 } from "uuid";
 import List from "./pages/List";
+import Report from "./pages/Report";
 
 function App() {
   const [userKey, setUserKey] = useState<string>("");
@@ -28,6 +29,7 @@ function App() {
             <Routes>
               <Route path="/insert" element={<Insert userKey={userKey} />} />
               <Route path="/list" element={<List userKey={userKey} />} />
+              <Route path="/report" element={<Report userKey={userKey} />} />
             </Routes>
             <BottomNavigation />
           </BrowserRouter>
