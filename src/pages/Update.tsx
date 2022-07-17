@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -11,92 +12,36 @@ import {
 } from "@mui/material";
 import DataPickers from "../components/common/DataPickers";
 import Header from "../components/Header";
-import SwitchButton from "../components/common/SwitchButton";
-import { getCategories, createIncomeExpense } from "../services/api";
+import { getCategories, deleteIncomeExpense } from "../services/api";
 import moment from "moment";
-
+import { useParams, useNavigate } from "react-router-dom";
+import { getOneIncomeExpense, updateIncomeExpense } from "../services/api";
 interface Data {
   userKey: string;
   amount: string;
   time: string | null;
   categoryId: number | undefined;
   note: string;
+  id: string | null | number;
 }
 
-interface Alert {
-  visible: boolean;
-  message: string | null;
-  severity: "success" | "error" | "info" | "warning" | undefined;
-}
-
-export default function Insert({ userKey }: { userKey: string }) {
-  const [title, setTitle] = useState("expense");
-  const [incomeStore, setIncomeStore] = useState([] as any[]);
-  const [expenseStore, setExpenseStore] = useState([] as any[]);
+export default function Update({ userKey }: { userKey: string }) {
+  const { status, id } = useParams();
+  const [title, setTitle] = useState("");
   const [currentCategory, setCurrentCategory] = useState<number>();
-  const [data, setData] = useState<Data>({
-    userKey,
-    amount: "0",
-    time: moment().format("YYYY-MM-DDThh:mm:ssZ"),
-    categoryId: undefined,
-    note: "",
-  });
-  const [alert, setAlert] = useState<Alert>({
-    visible: false,
-    message: null,
-    severity: undefined,
-  });
-
-  const handleAlert = useCallback((alert: Alert) => {
-    setAlert(alert);
-    setTimeout(() => {
-      setAlert({
-        visible: false,
-        message: null,
-        severity: undefined,
-      });
-    }, 2000);
-  }, []);
-
-  const currentStore = useMemo(() => {
-    if (title === "income") {
-      return incomeStore;
+  const [data, setData] = useState<Data>({} as Data);
+  const [categoryStore, setCategoryStore] = useState([] as any[]);
+  const navigate = useNavigate();
+  const getCategory = useCallback(async () => {
+    if (title) {
+      try {
+        const result = await getCategories(title);
+        setCategoryStore(result.data.data);
+      } catch {
+        console.log("error");
+      }
     }
-    return expenseStore;
-  }, [title, incomeStore, expenseStore]);
-
-  const handleChangeSwitch = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newTitle: string) => {
-      setTitle(newTitle);
-      setCurrentCategory(undefined);
-      setData({
-        note: "",
-        amount: "0",
-        time: moment().format("YYYY-MM-DDThh:mm:ssZ"),
-        categoryId: 0,
-        userKey,
-      });
-    },
-    [userKey]
-  );
-
-  const getCategoryIncome = useCallback(async () => {
-    try {
-      const result = await getCategories("income");
-      setIncomeStore(result.data.data);
-    } catch {
-      console.log("error");
-    }
-  }, []);
-
-  const getCategoryExpense = useCallback(async () => {
-    try {
-      const result = await getCategories("expense");
-      setExpenseStore(result.data.data);
-    } catch {
-      console.log("error");
-    }
-  }, []);
+  }, [title]);
 
   const handleClickCategory = useCallback((id: number) => {
     setCurrentCategory(id);
@@ -127,51 +72,66 @@ export default function Insert({ userKey }: { userKey: string }) {
         userKey,
         amount: parseFloat(data.amount.replace(/\D/g, "")),
       };
-      await createIncomeExpense(param, title);
-      setData({
-        time: moment().format("YYYY-MM-DDThh:mm:ssZ"),
-        amount: "0",
-        categoryId: undefined,
-        note: "",
-        userKey,
-      });
-      setCurrentCategory(undefined);
-      handleAlert({
-        visible: true,
-        message: "Successfully created",
-        severity: "success",
-      });
+      await updateIncomeExpense(param, title);
+      navigate("../list", { replace: true });
     } catch {
       console.log("error");
-      handleAlert({
-        visible: true,
-        message: "Create failed",
-        severity: "error",
-      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const param = {
+        userKey,
+        id: data.id,
+      };
+      await deleteIncomeExpense(param, title);
+      navigate("../list", { replace: true });
+    } catch {
+      console.log("error");
     }
   };
 
   useEffect(() => {
-    getCategoryIncome();
-  }, [getCategoryIncome]);
+    const getData = async () => {
+      try {
+        const result = await getOneIncomeExpense(id, status);
+        setTitle(result.data.data.category.status);
+        setCurrentCategory(result.data.data.category.id);
+        setData({
+          id: result.data.data.id,
+          userKey: userKey,
+          amount: Math.abs(result.data.data.amount).toLocaleString(),
+          note: result.data.data.note,
+          categoryId: result.data.data.category.id,
+          time: moment(result.data.data.time).format("YYYY-MM-DDThh:mm:ssZ"),
+        });
+      } catch {
+        console.log("error");
+      }
+    };
+    getData();
+  }, [id, status, userKey]);
 
   useEffect(() => {
-    getCategoryExpense();
-  }, [getCategoryExpense]);
+    getCategory();
+  }, [getCategory]);
 
   return (
     <>
-      <Header alert={alert}>
-        <Stack direction="row" justifyContent="center" py={1.2}>
-          <SwitchButton
-            content={[
-              { value: "expense", label: "Tiền chi" },
-              { value: "income", label: "Tiền thu" },
-            ]}
-            onChange={handleChangeSwitch}
-            alignment={title}
-          />
-        </Stack>
+      <Header>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Typography variant="h3" fontWeight={600}>
+            Chỉnh sửa
+          </Typography>
+        </Box>
       </Header>
       <Stack divider={<Divider orientation="horizontal" flexItem />}>
         <Grid container pl={2}>
@@ -266,7 +226,7 @@ export default function Insert({ userKey }: { userKey: string }) {
             </Typography>
           </Grid>
           <Grid item xs={12} textAlign="start" py={0.5}>
-            {currentStore.map((item) => (
+            {categoryStore.map((item) => (
               <Button
                 key={item.id}
                 className={currentCategory == item.id ? "hover" : ""}
@@ -305,7 +265,7 @@ export default function Insert({ userKey }: { userKey: string }) {
           onClick={handleSubmit}
           sx={{
             position: "absolute",
-            bottom: 67,
+            bottom: 108,
             left: 0,
             right: 0,
             width: "80%",
@@ -314,7 +274,26 @@ export default function Insert({ userKey }: { userKey: string }) {
           }}
         >
           <Typography variant="h2" fontWeight={500} color="#fff">
-            Nhập khoản chi
+            Chỉnh sửa khoản chi
+          </Typography>
+        </Button>
+        <Button
+          variant="contained"
+          disableElevation
+          onClick={handleDelete}
+          sx={{
+            position: "absolute",
+            bottom: 67,
+            left: 0,
+            right: 0,
+            width: "80%",
+            borderRadius: "20px",
+            mx: "auto",
+            backgroundColor: "red",
+          }}
+        >
+          <Typography variant="h2" fontWeight={500} color="#fff">
+            Xóa khoản chi
           </Typography>
         </Button>
       </Stack>

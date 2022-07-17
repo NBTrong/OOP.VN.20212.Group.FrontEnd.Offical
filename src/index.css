@@ -7,7 +7,11 @@
 body {
   font-family: "Poppins";
   height: 100vh;
-  background-image: linear-gradient(to right, #4daf54, #3d8880);
+  background-image: url(./styles/images/background.jpg);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   overflow: hidden;
 }
 

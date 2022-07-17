@@ -41,10 +41,10 @@ export default function LabelBottomNavigation() {
       icon: <PieChartOutlinedIcon fontSize="small" />,
     },
     {
-      content: "Khác",
-      value: "other",
+      content: "Wish list",
+      value: "wishList",
       handleClick: () => {
-        navigate("../insert", { replace: true });
+        navigate("../wish-list", { replace: true });
       },
       icon: <MoreHorizOutlinedIcon fontSize="small" />,
     },
@@ -59,11 +59,20 @@ export default function LabelBottomNavigation() {
         left: 0,
         right: 0,
         zIndex: 999,
+        borderBottomLeftRadius: "10px",
+        borderBottomRightRadius: "10px",
         backgroundColor: "#fafafa",
         borderTop: "1px solid #e0e0e0",
       }}
     >
-      <BottomNavigation value={value} onChange={handleChange}>
+      <BottomNavigation
+        value={value}
+        onChange={handleChange}
+        sx={{
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px",
+        }}
+      >
         {Tabs.map((tab, index) => (
           <BottomNavigationAction
             label={tab.content}

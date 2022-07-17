@@ -51,11 +51,10 @@ function a11yProps(index: number) {
 }
 
 function Item({ data, total }: { data: any; total: number }) {
-  console.log(total);
   if (data) {
     return (
       <Grid container p={1} px={2} spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <Stack spacing={0.5} direction="row" color={data.color}>
             <i className={data.icon}></i>
             <Typography
@@ -75,7 +74,7 @@ function Item({ data, total }: { data: any; total: number }) {
             </Typography>
           </Stack>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3.5}>
           <Typography
             variant="h4"
             pt={0.3}
@@ -90,10 +89,10 @@ function Item({ data, total }: { data: any; total: number }) {
               fontWeight: "bold",
             }}
           >
-            {data.totalAmount}
+            {data.totalAmount.toLocaleString()} đ
           </Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3.5}>
           <Typography
             variant="h4"
             pt={0.3}
@@ -121,10 +120,10 @@ export default function Report({ userKey }: { userKey: string }) {
   const [time, setTime] = React.useState<string | null>(
     moment().format("YYYY-MM-DDThh:mm:ssZ")
   );
-  const [expenseReport, setExpenseReport] = React.useState<any[]>([] as any[]);
-  const [incomeReport, setIncomeReport] = React.useState<any[]>([] as any[]);
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const [incomeReport, setIncomeReport] = React.useState<any[]>([] as any[]);
+  const [expenseReport, setExpenseReport] = React.useState<any[]>([] as any[]);
 
   const totalExpenseReport = React.useMemo(() => {
     let count = 0;
@@ -208,7 +207,7 @@ export default function Report({ userKey }: { userKey: string }) {
           time={time}
           inputFormat="MM/yyyy"
           views={["month", "year"]}
-          sx={{ width: "95%", margin: "auto", marginTop: 1, marginBottom: 1 }}
+          sx={{ width: "80%", margin: "auto", marginTop: 1, marginBottom: 1 }}
         />
         <Box sx={{ width: "100%" }}>
           <AppBar
@@ -260,7 +259,10 @@ export default function Report({ userKey }: { userKey: string }) {
                 >
                   <Typography variant="h3">Tổng</Typography>
                   <Typography variant="h3">
-                    {item === 0 ? totalExpenseReport : totalIncomeReport} đ
+                    {item === 0
+                      ? totalExpenseReport.toLocaleString()
+                      : totalIncomeReport.toLocaleString()}{" "}
+                    đ
                   </Typography>
                 </Stack>
                 <Box
@@ -271,7 +273,7 @@ export default function Report({ userKey }: { userKey: string }) {
                 ></Box>
                 <Box
                   sx={{
-                    height: "330px",
+                    height: "140px",
                     overflowY: "scroll",
                   }}
                 >

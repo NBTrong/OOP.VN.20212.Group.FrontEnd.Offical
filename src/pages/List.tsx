@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Typography, Box, Stack, Divider, Grid } from "@mui/material";
 import Header from "../components/Header";
 import DatePickers from "../components/common/DataPickers";
 import { getIncomeExpense } from "../services/api";
 import moment from "moment";
 import Item from "../components/common/Item";
+import { useNavigate } from "react-router-dom";
 
 export default function List({ userKey }: { userKey: string }) {
   const [time, setTime] = React.useState<string | null>(
     moment().format("YYYY-MM-DDThh:mm:ssZ")
   );
+  const navigate = useNavigate();
   const [expense, setExpense] = React.useState<any[]>([] as any[]);
   const [income, setIncome] = React.useState<any[]>([] as any[]);
   const flag = React.useRef("");
@@ -17,8 +19,8 @@ export default function List({ userKey }: { userKey: string }) {
   const list = React.useMemo(() => {
     const merged = [...income, ...expense];
     merged.sort((a, b) => {
-      return moment(a.time, "YYYY-MM-DD hh:mm:ss").diff(
-        moment(b.time, "YYYY-MM-DD hh:mm:ss")
+      return moment(b.time, "YYYY-MM-DD hh:mm:ss").diff(
+        moment(a.time, "YYYY-MM-DD hh:mm:ss")
       );
     });
     return merged;
@@ -62,7 +64,11 @@ export default function List({ userKey }: { userKey: string }) {
     }
   }, [userKey, time]);
 
-  React.useEffect(() => {
+  const handleClickItem = (item: any) => {
+    navigate(`../update/${item.category.status}/${item.id}`, { replace: true });
+  };
+
+  useEffect(() => {
     getExpense();
     getIncome();
   }, [time, getExpense, getIncome]);
@@ -90,7 +96,7 @@ export default function List({ userKey }: { userKey: string }) {
           time={time}
           inputFormat="MM/yyyy"
           views={["month", "year"]}
-          sx={{ width: "95%", margin: "auto", marginTop: 1, marginBottom: 1 }}
+          sx={{ width: "80%", margin: "auto", marginTop: 1, marginBottom: 1 }}
         />
         <Grid container py={1}>
           <Grid item xs={4}>
@@ -103,7 +109,7 @@ export default function List({ userKey }: { userKey: string }) {
                   fontWeight: 600,
                 }}
               >
-                {countIncome + "đ"}
+                {countIncome.toLocaleString() + "đ"}
               </Typography>
             </Stack>
           </Grid>
@@ -117,7 +123,7 @@ export default function List({ userKey }: { userKey: string }) {
                   fontWeight: 600,
                 }}
               >
-                {countExpense + "đ"}
+                {countExpense.toLocaleString() + "đ"}
               </Typography>
             </Stack>
           </Grid>
@@ -131,20 +137,23 @@ export default function List({ userKey }: { userKey: string }) {
                   fontWeight: 600,
                 }}
               >
-                {countIncome + countExpense}
+                {(countIncome + countExpense).toLocaleString() + "đ"}
               </Typography>
             </Stack>
           </Grid>
         </Grid>
         <Box
           sx={{
-            height: "330px",
+            height: "352px",
             overflowY: "scroll",
           }}
         >
           {list.map((item, index) => {
             let locked = false;
-            if (item.time === flag.current) {
+            if (
+              moment(item.time).format("YYYY-MM-DD") ===
+              moment(flag.current).format("YYYY-MM-DD")
+            ) {
               locked = true;
             } else {
               flag.current = item.time;
@@ -161,7 +170,7 @@ export default function List({ userKey }: { userKey: string }) {
                       px: 2,
                     }}
                   >
-                    <Typography variant="h5" fontWeight={600}>
+                    <Typography variant="h4" fontWeight={600}>
                       {moment(item.time).format("DD-MM-YYYY")}
                     </Typography>
                     {/* <Typography variant="h5" fontWeight={600}>
@@ -169,7 +178,11 @@ export default function List({ userKey }: { userKey: string }) {
                   </Typography> */}
                   </Stack>
                 )}
-                <Item key={index} item={item} />
+                <Item
+                  key={index}
+                  item={item}
+                  onClick={() => handleClickItem(item)}
+                />
                 <Divider orientation="horizontal" flexItem />
               </>
             );

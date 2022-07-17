@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
@@ -8,6 +8,8 @@ import Insert from "./pages/Insert";
 import { v4 as uuidv4 } from "uuid";
 import List from "./pages/List";
 import Report from "./pages/Report";
+import WishList from "./pages/WishList";
+import Update from "./pages/Update";
 
 function App() {
   const [userKey, setUserKey] = useState<string>("");
@@ -28,8 +30,16 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/insert" element={<Insert userKey={userKey} />} />
+              <Route
+                path="/update/:status/:id"
+                element={<Update userKey={userKey} />}
+              />
               <Route path="/list" element={<List userKey={userKey} />} />
               <Route path="/report" element={<Report userKey={userKey} />} />
+              <Route
+                path="/wish-list"
+                element={<WishList userKey={userKey} />}
+              />
             </Routes>
             <BottomNavigation />
           </BrowserRouter>
